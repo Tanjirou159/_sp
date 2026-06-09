@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Programming — AI-Assisted Course</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #16181d;
+    --surface2: #1e2027;
+    --border: #2a2d35;
+    --text: #c9d1d9;
+    --text2: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #79c0ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d2991d;
+    --purple: #a371f7;
+    --radius: 8px;
+    --transition: 0.2s ease;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+  nav {
+    width: 280px;
+    min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh;
+    position: fixed;
+    overflow-y: auto;
+    padding: 20px;
+    z-index: 10;
+  }
+  nav h2 {
+    font-size: 1.1rem;
+    color: var(--accent2);
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  nav .subtitle {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-bottom: 20px;
+  }
+  nav a {
+    display: block;
+    color: var(--text2);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+    transition: all var(--transition);
+    border-left: 2px solid transparent;
+  }
+  nav a:hover { background: var(--surface2); color: var(--text); }
+  nav a.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+  main {
+    margin-left: 280px;
+    padding: 40px 60px;
+    max-width: 900px;
+    width: 100%;
+  }
+  .chapter { display: none; }
+  .chapter.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  h1 { font-size: 2rem; color: var(--accent2); margin-bottom: 4px; }
+  h2 { font-size: 1.4rem; margin: 32px 0 12px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  h3 { font-size: 1.1rem; margin: 24px 0 8px; color: var(--accent2); }
+  p { margin: 10px 0; color: var(--text); }
+  ul, ol { margin: 8px 0 8px 24px; color: var(--text); }
+  li { margin: 4px 0; }
+  strong { color: var(--accent); }
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 12px 0;
+    white-space: pre;
+    tab-size: 2;
+  }
+  code {
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.85em;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 0.9rem;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+  }
+  th { background: var(--surface2); color: var(--accent2); font-weight: 600; }
+  tr:nth-child(even) td { background: var(--surface); }
+  .home-hero {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .home-hero h1 { font-size: 2.5rem; }
+  .home-hero p { color: var(--text2); font-size: 1.1rem; max-width: 600px; margin: 16px auto; }
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .home-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color var(--transition);
+    cursor: pointer;
+  }
+  .home-card:hover { border-color: var(--accent); }
+  .home-card h3 { font-size: 1rem; margin: 0 0 6px; }
+  .home-card p { font-size: 0.85rem; color: var(--text2); margin: 0; }
+  .home-card .num { color: var(--accent); font-size: 0.75rem; font-weight: 600; }
+  blockquote {
+    background: var(--surface);
+    border-left: 3px solid var(--orange);
+    margin: 12px 0;
+    padding: 12px 18px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    color: var(--orange);
+    font-size: 0.9rem;
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+  .badge-purple { background: rgba(163,113,247,0.15); color: var(--purple); }
+
+  @media (max-width: 768px) {
+    nav {
+      position: static;
+      width: 100%;
+      min-width: auto;
+      height: auto;
+      max-height: 45vh;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    body { flex-direction: column; }
+    main { margin-left: 0; padding: 20px; }
+  }
+  .to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity var(--transition);
+    z-index: 20;
+  }
+  .to-top.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<nav>
+  <h2>System Programming</h2>
+  <div class="subtitle">AI-Assisted Learning Course</div>
+  <a href="#home" class="active" data-target="home">Home</a>
+  <a href="#ch1" data-target="ch1">Ch 1: Introduction</a>
+  <a href="#ch2" data-target="ch2">Ch 2: Process Management</a>
+  <a href="#ch3" data-target="ch3">Ch 3: Memory Management</a>
+  <a href="#ch4" data-target="ch4">Ch 4: Threads & Concurrency</a>
+  <a href="#ch5" data-target="ch5">Ch 5: File I/O</a>
+  <a href="#ch6" data-target="ch6">Ch 6: IPC</a>
+  <a href="#ch7" data-target="ch7">Ch 7: Network Programming</a>
+  <a href="#ch8" data-target="ch8">Ch 8: Assembly, Linker & Loader</a>
+</nav>
+
+<main>
+  <!-- HOME -->
+  <section class="chapter active" id="home">
+    <div class="home-hero">
+      <h1>System Programming</h1>
+      <p>An AI-assisted introduction to system programming covering process management, memory management, threads & concurrency, file systems, IPC, network programming, and assembly language.</p>
+    </div>
+    <div class="home-grid" id="homeGrid"></div>
+  </section>
+
+  <!-- CH1 -->
+  <section class="chapter" id="ch1">
+    <h1>Chapter 1: Introduction to System Programming</h1>
+
+    <h2>1.1 What is System Programming</h2>
+    <p>System programming involves writing software that directly interacts with the operating system kernel, manages hardware resources, and provides low-level services. Unlike application programming, system programming requires in-depth understanding of the OS internals.</p>
+    <h3>Scope of System Programming</h3>
+    <ul>
+      <li><strong>OS Kernel</strong>: Process scheduling, memory management, file systems</li>
+      <li><strong>Compilers & Assemblers</strong>: Translating high-level languages to machine code</li>
+      <li><strong>Linkers & Loaders</strong>: Combining object files into executables</li>
+      <li><strong>Device Drivers</strong>: Controlling hardware devices</li>
+      <li><strong>Utility Programs</strong>: Shells, system call libraries</li>
+    </ul>
+
+    <h2>1.2 System Programming vs Application Programming</h2>
+    <table>
+      <tr><th>Characteristic</th><th>System Programming</th><th>Application Programming</th></tr>
+      <tr><td>Execution Mode</td><td>Kernel mode / User mode</td><td>User mode</td></tr>
+      <tr><td>Resource Access</td><td>Direct hardware access</td><td>Via system calls</td></tr>
+      <tr><td>Languages</td><td>C / Rust / Assembly</td><td>Any language</td></tr>
+      <tr><td>Error Handling</td><td>Must handle low-level errors</td><td>Can rely on OS abstractions</td></tr>
+      <tr><td>Performance</td><td>Extremely high</td><td>Depends on requirements</td></tr>
+    </table>
+
+    <h2>1.3 System Calls</h2>
+    <p>System calls are the interface between user programs and the OS kernel.</p>
+    <pre><code>#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+
+int main() {
+    write(STDOUT_FILENO, "Hello, System Programming!\n", 28);
+    return 0;
+}</code></pre>
+
+    <table>
+      <tr><th>Category</th><th>Example System Calls</th></tr>
+      <tr><td>Process Control</td><td><code>fork()</code>, <code>exec()</code>, <code>exit()</code></td></tr>
+      <tr><td>File Operations</td><td><code>open()</code>, <code>read()</code>, <code>write()</code>, <code>close()</code></td></tr>
+      <tr><td>Memory Management</td><td><code>mmap()</code>, <code>brk()</code>, <code>sbrk()</code></td></tr>
+      <tr><td>IPC</td><td><code>pipe()</code>, <code>shmget()</code>, <code>msgget()</code></td></tr>
+      <tr><td>Networking</td><td><code>socket()</code>, <code>bind()</code>, <code>listen()</code></td></tr>
+    </table>
+
+    <h2>1.4 Development Environment</h2>
+    <p>This book uses a Linux environment (Ubuntu / WSL) with the GCC compiler:</p>
+    <pre><code>sudo apt install build-essential gdb valgrind
+gcc -Wall -o program program.c
+./program</code></pre>
+
+    <h2>1.5 Your First System Program</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/types.h&gt;
+
+int main() {
+    pid_t pid = getpid();
+    pid_t ppid = getppid();
+    
+    printf("Process ID: %d\n", pid);
+    printf("Parent Process ID: %d\n", ppid);
+    printf("User ID: %d\n", getuid());
+    printf("Group ID: %d\n", getgid());
+    
+    return 0;
+}</code></pre>
+
+    <h2>Summary</h2>
+    <ul>
+      <li>System programming directly interacts with the OS kernel</li>
+      <li>System calls bridge user mode and kernel mode</li>
+      <li>Linux provides a rich set of system call APIs</li>
+    </ul>
+  </section>
+
+  <!-- CH2 -->
+  <section class="chapter" id="ch2">
+    <h1>Chapter 2: Process Management</h1>
+
+    <h2>2.1 Process Concept</h2>
+    <p>A <strong>process</strong> is an instance of a running program. Each process has its own:</p>
+    <ul>
+      <li><strong>Address space</strong>: code, data, stack, heap</li>
+      <li><strong>System resources</strong>: file descriptors, signal handlers</li>
+      <li><strong>Execution state</strong>: register values, program counter</li>
+    </ul>
+
+    <h2>2.2 Process States</h2>
+    <pre><code>Created → Ready ↔ Running → Terminated
+            ↓
+         Blocked</code></pre>
+    <table>
+      <tr><th>State</th><th>Description</th></tr>
+      <tr><td>Running</td><td>Currently executing on the CPU</td></tr>
+      <tr><td>Ready</td><td>Waiting for CPU scheduling</td></tr>
+      <tr><td>Blocked</td><td>Waiting for I/O or an event</td></tr>
+      <tr><td>Zombie</td><td>Terminated but parent hasn't reaped</td></tr>
+      <tr><td>Orphan</td><td>Parent terminated first</td></tr>
+    </table>
+
+    <h2>2.3 fork() — Creating Processes</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    pid_t pid = fork();
+    
+    if (pid &lt; 0) {
+        perror("fork failed");
+        exit(1);
+    }
+    
+    if (pid == 0) {
+        printf("[Child] PID: %d, Parent PID: %d\n", getpid(), getppid());
+    } else {
+        printf("[Parent] PID: %d, Child PID: %d\n", getpid(), pid);
+    }
+    
+    return 0;
+}</code></pre>
+    <ul>
+      <li>Parent receives the child's PID</li>
+      <li>Child receives 0</li>
+      <li>Child copies parent's address space (Copy-on-Write)</li>
+    </ul>
+
+    <h2>2.4 exec() — Executing Programs</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/wait.h&gt;
+
+int main() {
+    pid_t pid = fork();
+    
+    if (pid == 0) {
+        execlp("ls", "ls", "-la", NULL);
+        perror("exec failed");
+        return 1;
+    }
+    
+    int status;
+    waitpid(pid, &amp;status, 0);
+    printf("Child exited, status: %d\n", WEXITSTATUS(status));
+    
+    return 0;
+}</code></pre>
+    <table>
+      <tr><th>Function</th><th>Description</th></tr>
+      <tr><td><code>execlp()</code></td><td>Search PATH, argument list</td></tr>
+      <tr><td><code>execvp()</code></td><td>Search PATH, argument array</td></tr>
+      <tr><td><code>execle()</code></td><td>Specify path, pass environment</td></tr>
+      <tr><td><code>execvpe()</code></td><td>Specify path + environment variables</td></tr>
+    </table>
+
+    <h2>2.5 wait() and waitpid()</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/wait.h&gt;
+
+int main() {
+    pid_t pid = fork();
+    
+    if (pid == 0) {
+        printf("Child working...\n");
+        sleep(2);
+        printf("Child done\n");
+        return 42;
+    }
+    
+    int status;
+    wait(&amp;status);
+    
+    if (WIFEXITED(status)) {
+        printf("Child exited normally, return: %d\n", WEXITSTATUS(status));
+    }
+    
+    return 0;
+}</code></pre>
+
+    <h2>2.6 Zombie and Orphan Processes</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    pid_t pid = fork();
+    
+    if (pid == 0) {
+        printf("Child exiting\n");
+        exit(0);
+    }
+    
+    sleep(30);
+    printf("Parent exiting\n");
+    
+    return 0;
+}</code></pre>
+    <blockquote>Always call <code>wait()</code> to reap child processes, otherwise zombie processes will accumulate.</blockquote>
+
+    <h2>2.7 Signal Handling</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;signal.h&gt;
+#include &lt;unistd.h&gt;
+
+void handler(int sig) {
+    printf("Received signal: %d\n", sig);
+}
+
+int main() {
+    signal(SIGINT, handler);
+    printf("Press Ctrl+C to test signal handling\n");
+    
+    while (1) sleep(1);
+    
+    return 0;
+}</code></pre>
+    <table>
+      <tr><th>Signal</th><th>Default Behavior</th><th>Purpose</th></tr>
+      <tr><td>SIGINT (2)</td><td>Terminate</td><td>Ctrl+C</td></tr>
+      <tr><td>SIGKILL (9)</td><td>Terminate</td><td>Force kill (cannot be ignored)</td></tr>
+      <tr><td>SIGSEGV (11)</td><td>Terminate + core dump</td><td>Memory access violation</td></tr>
+      <tr><td>SIGTERM (15)</td><td>Terminate</td><td>Graceful termination</td></tr>
+    </table>
+
+    <h2>Summary</h2>
+    <ul>
+      <li><code>fork()</code> creates new processes; return value distinguishes parent/child</li>
+      <li>The <code>exec()</code> family replaces the process image</li>
+      <li><code>wait()</code>/<code>waitpid()</code> reaps child resources</li>
+      <li>Signals provide an asynchronous event handling mechanism</li>
+    </ul>
+  </section>
+
+  <!-- CH3 -->
+  <section class="chapter" id="ch3">
+    <h1>Chapter 3: Memory Management</h1>
+
+    <h2>3.1 Virtual Memory</h2>
+    <p>The OS provides each process with an independent virtual address space. The <strong>MMU</strong> (Memory Management Unit) maps virtual addresses to physical memory via page tables.</p>
+    <pre><code>Virtual Address → [MMU + Page Table] → Physical Address</code></pre>
+
+    <h3>Address Space Layout</h3>
+    <pre><code>  High Addr +--------------------+
+            | Environment/Args    |
+            |--------------------|
+            | Stack (grows down)  |
+            |        ↓            |
+            |        ↑            |
+            | Heap (grows up)     |
+            |--------------------|
+            | BSS (uninitialized) |
+            | Data (initialized)  |
+            |--------------------|
+            | Text (code)         |
+  Low Addr  +--------------------+</code></pre>
+
+    <h2>3.2 Dynamic Memory Allocation</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+    int *arr = (int *)malloc(5 * sizeof(int));
+    if (arr == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return 1;
+    }
+    
+    for (int i = 0; i &lt; 5; i++) arr[i] = i * 10;
+    
+    int *bigger = (int *)realloc(arr, 10 * sizeof(int));
+    if (bigger == NULL) { free(arr); return 1; }
+    
+    for (int i = 5; i &lt; 10; i++) bigger[i] = i * 10;
+    
+    int *zero = (int *)calloc(5, sizeof(int));
+    
+    free(bigger);
+    free(zero);
+    
+    return 0;
+}</code></pre>
+
+    <h2>3.3 sbrk() and brk()</h2>
+    <p>Under the hood, <code>malloc</code> uses <code>sbrk()</code>/<code>brk()</code> to adjust the process's heap boundary:</p>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    void *before = sbrk(0);
+    printf("Heap boundary before: %p\n", before);
+    
+    void *p = malloc(1024 * 1024);
+    void *after = sbrk(0);
+    printf("Heap boundary after: %p\n", after);
+    printf("Difference: %ld bytes\n", (long)(after - before));
+    
+    free(p);
+    return 0;
+}</code></pre>
+
+    <h2>3.4 mmap() — Memory Mapping</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    size_t size = 4096;
+    
+    void *addr = mmap(NULL, size,
+                      PROT_READ | PROT_WRITE,
+                      MAP_PRIVATE | MAP_ANONYMOUS,
+                      -1, 0);
+    
+    if (addr == MAP_FAILED) {
+        perror("mmap failed");
+        return 1;
+    }
+    
+    strcpy((char *)addr, "Hello, mmap!");
+    printf("Content: %s\n", (char *)addr);
+    
+    munmap(addr, size);
+    return 0;
+}</code></pre>
+    <table>
+      <tr><th>Flag</th><th>Description</th></tr>
+      <tr><td><code>PROT_READ</code></td><td>Readable</td></tr>
+      <tr><td><code>PROT_WRITE</code></td><td>Writable</td></tr>
+      <tr><td><code>PROT_EXEC</code></td><td>Executable</td></tr>
+      <tr><td><code>MAP_PRIVATE</code></td><td>Private mapping (Copy-on-Write)</td></tr>
+      <tr><td><code>MAP_SHARED</code></td><td>Shared mapping</td></tr>
+      <tr><td><code>MAP_ANONYMOUS</code></td><td>Anonymous mapping (no backing file)</td></tr>
+    </table>
+
+    <h2>3.5 Memory Alignment and Structs</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;stddef.h&gt;
+
+struct packed {
+    char a;     // 1 byte
+    int  b;     // 4 bytes
+    char c;     // 1 byte
+};
+
+#pragma pack(push, 1)
+struct aligned { char a; int b; char c; };
+#pragma pack(pop)
+
+int main() {
+    printf("packed size: %zu bytes\n", sizeof(struct packed));
+    printf("aligned size: %zu bytes\n", sizeof(struct aligned));
+    return 0;
+}</code></pre>
+
+    <h2>3.6 Memory Debugging (Valgrind)</h2>
+    <pre><code>gcc -g -o program program.c
+valgrind --leak-check=full ./program</code></pre>
+    <pre><code>void memory_leak()   { int *p = malloc(100); }           // unfreed
+void use_after_free() { int *p = malloc(100); free(p); p[0] = 42; }
+void buffer_overflow(){ int arr[5]; arr[10] = 42; }       // out of bounds</code></pre>
+
+    <h2>Summary</h2>
+    <ul>
+      <li>Virtual memory provides isolation and security</li>
+      <li><code>malloc</code>/<code>free</code> manage heap memory</li>
+      <li><code>mmap()</code> offers lower-level memory control</li>
+      <li>Valgrind is an essential memory debugging tool</li>
+    </ul>
+  </section>
+
+  <!-- CH4 -->
+  <section class="chapter" id="ch4">
+    <h1>Chapter 4: Threads & Concurrency</h1>
+
+    <h2>4.1 Introduction to Threads</h2>
+    <p>A <strong>thread</strong> is the smallest unit of CPU scheduling. Threads within the same process share memory but have their own stack.</p>
+    <pre><code>Process
+├── Address Space (code, data, heap)
+├── Thread 1 (stack, registers)
+├── Thread 2 (stack, registers)
+└── Thread 3 (stack, registers)</code></pre>
+
+    <h2>4.2 Basic pthread Usage</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;unistd.h&gt;
+
+void *thread_func(void *arg) {
+    int id = *(int *)arg;
+    printf("Thread %d started, PID: %d\n", id, getpid());
+    sleep(1);
+    printf("Thread %d done\n", id);
+    return NULL;
+}
+
+int main() {
+    pthread_t t1, t2;
+    int id1 = 1, id2 = 2;
+    
+    pthread_create(&amp;t1, NULL, thread_func, &amp;id1);
+    pthread_create(&amp;t2, NULL, thread_func, &amp;id2);
+    
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+    
+    printf("Main thread done\n");
+    return 0;
+}</code></pre>
+    <pre><code>gcc -pthread -o thread thread.c</code></pre>
+
+    <h2>4.3 Race Conditions</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+
+int counter = 0;
+
+void *increment(void *arg) {
+    for (int i = 0; i &lt; 1000000; i++) {
+        counter++;  // NOT atomic!
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t t1, t2;
+    pthread_create(&amp;t1, NULL, increment, NULL);
+    pthread_create(&amp;t2, NULL, increment, NULL);
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+    
+    printf("Expected: 2000000, Actual: %d\n", counter);
+    return 0;
+}</code></pre>
+    <blockquote><code>counter++</code> is not atomic — it involves read, modify, and write steps.</blockquote>
+
+    <h2>4.4 Mutex (Mutual Exclusion)</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+
+int counter = 0;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void *increment(void *arg) {
+    for (int i = 0; i &lt; 1000000; i++) {
+        pthread_mutex_lock(&amp;mutex);
+        counter++;
+        pthread_mutex_unlock(&amp;mutex);
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t t1, t2;
+    pthread_create(&amp;t1, NULL, increment, NULL);
+    pthread_create(&amp;t2, NULL, increment, NULL);
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+    
+    printf("Expected: 2000000, Actual: %d\n", counter);
+    pthread_mutex_destroy(&amp;mutex);
+    return 0;
+}</code></pre>
+
+    <h2>4.5 Deadlock</h2>
+    <pre><code>pthread_mutex_t lock1 = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
+
+void *thread_a(void *arg) {
+    pthread_mutex_lock(&amp;lock1);
+    sleep(1);
+    pthread_mutex_lock(&amp;lock2);  // waits forever
+    ...
+}
+
+void *thread_b(void *arg) {
+    pthread_mutex_lock(&amp;lock2);
+    sleep(1);
+    pthread_mutex_lock(&amp;lock1);  // waits forever
+    ...
+}</code></pre>
+
+    <h3>Deadlock Prevention</h3>
+    <ol>
+      <li><strong>Fixed lock ordering</strong>: all threads acquire locks in the same order</li>
+      <li><strong>Try-lock</strong>: use <code>pthread_mutex_trylock()</code></li>
+      <li><strong>Reduce lock scope</strong>: protect only the necessary code</li>
+    </ol>
+
+    <h2>4.6 Condition Variables</h2>
+    <pre><code>pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+int ready = 0;
+
+void *worker(void *arg) {
+    pthread_mutex_lock(&amp;mutex);
+    while (!ready) pthread_cond_wait(&amp;cond, &amp;mutex);
+    printf("Worker: received notification, starting work\n");
+    pthread_mutex_unlock(&amp;mutex);
+    return NULL;
+}
+
+void *notifier(void *arg) {
+    sleep(1);
+    pthread_mutex_lock(&amp;mutex);
+    ready = 1;
+    pthread_cond_signal(&amp;cond);
+    pthread_mutex_unlock(&amp;mutex);
+    return NULL;
+}</code></pre>
+
+    <h2>4.7 Thread-Safe Queue Example</h2>
+    <pre><code>typedef struct {
+    int *buf; int size, head, tail;
+    pthread_mutex_t mutex;
+    pthread_cond_t not_full, not_empty;
+} queue_t;
+
+queue_t *queue_create(int size) {
+    queue_t *q = malloc(sizeof(queue_t));
+    q-&gt;buf = malloc(size * sizeof(int));
+    q-&gt;size = size; q-&gt;head = q-&gt;tail = 0;
+    pthread_mutex_init(&amp;q-&gt;mutex, NULL);
+    pthread_cond_init(&amp;q-&gt;not_full, NULL);
+    pthread_cond_init(&amp;q-&gt;not_empty, NULL);
+    return q;
+}
+
+void queue_push(queue_t *q, int val) {
+    pthread_mutex_lock(&amp;q-&gt;mutex);
+    while ((q-&gt;tail + 1) % q-&gt;size == q-&gt;head)
+        pthread_cond_wait(&amp;q-&gt;not_full, &amp;q-&gt;mutex);
+    q-&gt;buf[q-&gt;tail] = val;
+    q-&gt;tail = (q-&gt;tail + 1) % q-&gt;size;
+    pthread_cond_signal(&amp;q-&gt;not_empty);
+    pthread_mutex_unlock(&amp;q-&gt;mutex);
+}
+
+int queue_pop(queue_t *q) {
+    pthread_mutex_lock(&amp;q-&gt;mutex);
+    while (q-&gt;head == q-&gt;tail)
+        pthread_cond_wait(&amp;q-&gt;not_empty, &amp;q-&gt;mutex);
+    int val = q-&gt;buf[q-&gt;head];
+    q-&gt;head = (q-&gt;head + 1) % q-&gt;size;
+    pthread_cond_signal(&amp;q-&gt;not_full);
+    pthread_mutex_unlock(&amp;q-&gt;mutex);
+    return val;
+}</code></pre>
+
+    <h2>Summary</h2>
+    <ul>
+      <li>Threads share memory but have independent stacks</li>
+      <li>Mutexes protect shared resources against race conditions</li>
+      <li>Incorrect lock ordering causes deadlocks</li>
+      <li>Condition variables enable thread notification</li>
+    </ul>
+  </section>
+
+  <!-- CH5 -->
+  <section class="chapter" id="ch5">
+    <h1>Chapter 5: File I/O</h1>
+
+    <h2>5.1 File Descriptors</h2>
+    <p>In Linux, all I/O operations use <strong>file descriptors</strong> — non-negative integers the kernel uses to track open files.</p>
+    <pre><code>stdin  (0) ← keyboard
+stdout (1) → screen
+stderr (2) → screen</code></pre>
+
+    <h2>5.2 open() / close()</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    int fd = open("test.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    
+    if (fd &lt; 0) {
+        perror("open failed");
+        exit(1);
+    }
+    
+    printf("File descriptor: %d\n", fd);
+    close(fd);
+    return 0;
+}</code></pre>
+    <table>
+      <tr><th>Flag</th><th>Description</th></tr>
+      <tr><td><code>O_RDONLY</code></td><td>Read only</td></tr>
+      <tr><td><code>O_WRONLY</code></td><td>Write only</td></tr>
+      <tr><td><code>O_RDWR</code></td><td>Read and write</td></tr>
+      <tr><td><code>O_CREAT</code></td><td>Create if doesn't exist</td></tr>
+      <tr><td><code>O_TRUNC</code></td><td>Truncate file</td></tr>
+      <tr><td><code>O_APPEND</code></td><td>Append mode</td></tr>
+    </table>
+
+    <h2>5.3 read() / write()</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    const char *msg = "Hello, System Programming!\n";
+    
+    int fd = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd &lt; 0) { perror("open failed"); return 1; }
+    
+    ssize_t written = write(fd, msg, strlen(msg));
+    printf("Wrote %zd bytes\n", written);
+    close(fd);
+    
+    fd = open("output.txt", O_RDONLY);
+    char buf[256] = {0};
+    
+    ssize_t bytes = read(fd, buf, sizeof(buf) - 1);
+    printf("Read %zd bytes: %s", bytes, buf);
+    close(fd);
+    
+    return 0;
+}</code></pre>
+
+    <h2>5.4 dup() / dup2()</h2>
+    <p><code>dup2()</code> duplicates file descriptors, commonly used for redirection:</p>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    int fd = open("redirect.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd &lt; 0) { perror("open failed"); return 1; }
+    
+    dup2(fd, STDOUT_FILENO);
+    close(fd);
+    
+    printf("This goes to redirect.txt\n");
+    printf("stdout has been redirected\n");
+    
+    return 0;
+}</code></pre>
+
+    <h3>Shell Redirection Implementation</h3>
+    <pre><code>pid_t pid = fork();
+if (pid == 0) {
+    int fd = open("ls_output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    dup2(fd, STDOUT_FILENO);
+    close(fd);
+    execlp("ls", "ls", "-la", NULL);
+    perror("exec failed");
+    return 1;
+}
+wait(NULL);</code></pre>
+
+    <h2>5.5 Pipe</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/wait.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    int pipefd[2];
+    if (pipe(pipefd) &lt; 0) { perror("pipe failed"); return 1; }
+    
+    pid_t pid = fork();
+    
+    if (pid == 0) {
+        close(pipefd[0]);
+        const char *msg = "Hello from child!";
+        write(pipefd[1], msg, strlen(msg));
+        close(pipefd[1]);
+        exit(0);
+    }
+    
+    close(pipefd[1]);
+    char buf[256] = {0};
+    read(pipefd[0], buf, sizeof(buf));
+    printf("Parent received: %s\n", buf);
+    close(pipefd[0]);
+    
+    wait(NULL);
+    return 0;
+}</code></pre>
+
+    <h2>5.6 Shell Pipeline (simulating <code>ls | wc -l</code>)</h2>
+    <pre><code>int main() {
+    int pipefd[2];
+    pipe(pipefd);
+    
+    pid_t pid1 = fork();
+    if (pid1 == 0) {
+        close(pipefd[0]);
+        dup2(pipefd[1], STDOUT_FILENO);
+        close(pipefd[1]);
+        execlp("ls", "ls", NULL);
+        perror("exec ls failed");
+        exit(1);
+    }
+    
+    pid_t pid2 = fork();
+    if (pid2 == 0) {
+        close(pipefd[1]);
+        dup2(pipefd[0], STDIN_FILENO);
+        close(pipefd[0]);
+        execlp("wc", "wc", "-l", NULL);
+        perror("exec wc failed");
+        exit(1);
+    }
+    
+    close(pipefd[0]); close(pipefd[1]);
+    waitpid(pid1, NULL, 0); waitpid(pid2, NULL, 0);
+    return 0;
+}</code></pre>
+
+    <h2>5.7 lseek() — File Positioning</h2>
+    <pre><code>int fd = open("seek.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
+write(fd, "ABCDEFGHIJ", 10);
+
+lseek(fd, 0, SEEK_SET);  // move to start
+lseek(fd, 5, SEEK_SET);  // move to 5th byte
+write(fd, "12345", 5);
+// Result: "ABCDE12345"</code></pre>
+
+    <h2>5.8 stat() — File Information</h2>
+    <pre><code>#include &lt;sys/stat.h&gt;
+
+struct stat st;
+if (stat("test.txt", &amp;st) &lt; 0) { perror("stat failed"); return 1; }
+
+printf("Size: %ld bytes\n", st.st_size);
+printf("Permissions: %o\n", st.st_mode &amp; 0777);
+printf("Hard links: %ld\n", st.st_nlink);
+printf("Owner UID: %d\n", st.st_uid);
+printf("Group GID: %d\n", st.st_gid);</code></pre>
+
+    <h2>Summary</h2>
+    <ul>
+      <li>File descriptors are the fundamental I/O abstraction</li>
+      <li><code>dup2()</code> implements redirection</li>
+      <li><code>pipe()</code> enables inter-process data transfer</li>
+      <li>Combining pipes and redirection can implement shell features</li>
+    </ul>
+  </section>
+
+  <!-- CH6 -->
+  <section class="chapter" id="ch6">
+    <h1>Chapter 6: Inter-Process Communication (IPC)</h1>
+
+    <h2>6.1 IPC Overview</h2>
+    <table>
+      <tr><th>Mechanism</th><th>Description</th><th>Use Case</th></tr>
+      <tr><td>Pipe</td><td>Unidirectional data stream</td><td>Parent-child processes</td></tr>
+      <tr><td>FIFO (Named Pipe)</td><td>Unidirectional, across unrelated processes</td><td>Unrelated processes</td></tr>
+      <tr><td>Signal</td><td>Asynchronous event notification</td><td>Event notification</td></tr>
+      <tr><td>Shared Memory</td><td>Most efficient data sharing</td><td>Large data exchange</td></tr>
+      <tr><td>Message Queue</td><td>Message-oriented communication</td><td>Async messaging</td></tr>
+      <tr><td>Semaphore</td><td>Synchronization mechanism</td><td>Resource contention</td></tr>
+      <tr><td>Socket</td><td>Cross-machine communication</td><td>Network communication</td></tr>
+    </table>
+
+    <h2>6.2 Bidirectional Pipes</h2>
+    <pre><code>int to_child[2], to_parent[2];
+pipe(to_child); pipe(to_parent);
+
+pid_t pid = fork();
+
+if (pid == 0) {
+    close(to_child[1]); close(to_parent[0]);
+    char msg[256];
+    read(to_child[0], msg, sizeof(msg));
+    printf("[Child] Received: %s\n", msg);
+    write(to_parent[1], "OK", 2);
+    close(to_child[0]); close(to_parent[1]);
+    exit(0);
+}
+
+close(to_child[0]); close(to_parent[1]);
+write(to_child[1], "Hello", 5);
+
+char reply[256];
+read(to_parent[0], reply, sizeof(reply));
+printf("[Parent] Reply: %s\n", reply);
+close(to_child[1]); close(to_parent[0]);
+wait(NULL);</code></pre>
+
+    <h2>6.3 FIFO (Named Pipe)</h2>
+    <pre><code>// writer.c
+const char *fifo_path = "/tmp/my_fifo";
+mkfifo(fifo_path, 0666);
+
+printf("Waiting for reader...\n");
+int fd = open(fifo_path, O_WRONLY);
+const char *msg = "Hello through FIFO!";
+write(fd, msg, strlen(msg));
+close(fd);
+unlink(fifo_path);</code></pre>
+    <pre><code>// reader.c
+const char *fifo_path = "/tmp/my_fifo";
+
+printf("Waiting for writer...\n");
+int fd = open(fifo_path, O_RDONLY);
+
+char buf[256] = {0};
+read(fd, buf, sizeof(buf));
+printf("Received: %s\n", buf);
+close(fd);</code></pre>
+    <pre><code>gcc -o writer writer.c && gcc -o reader reader.c
+./reader &#38;   # start reader (background)
+./writer     # start writer</code></pre>
+
+    <h2>6.4 Shared Memory (System V)</h2>
+    <pre><code>#include &lt;sys/shm.h&gt;
+#include &lt;sys/ipc.h&gt;
+
+key_t key = IPC_PRIVATE;
+int shmid = shmget(key, 1024, IPC_CREAT | 0666);
+
+pid_t pid = fork();
+
+if (pid == 0) {
+    void *addr = shmat(shmid, NULL, 0);
+    strcpy((char *)addr, "Hello from child!");
+    shmdt(addr);
+    exit(0);
+}
+
+wait(NULL);
+
+void *addr = shmat(shmid, NULL, 0);
+printf("Shared memory: %s\n", (char *)addr);
+shmdt(addr);
+shmctl(shmid, IPC_RMID, NULL);</code></pre>
+
+    <h2>6.5 POSIX Shared Memory</h2>
+    <pre><code>#include &lt;fcntl.h&gt;
+#include &lt;sys/mman.h&gt;
+
+const char *name = "/my_shm";
+size_t size = 4096;
+
+int fd = shm_open(name, O_CREAT | O_RDWR, 0666);
+ftruncate(fd, size);
+
+void *addr = mmap(NULL, size, PROT_READ | PROT_WRITE,
+                  MAP_SHARED, fd, 0);
+close(fd);
+
+pid_t pid = fork();
+if (pid == 0) {
+    strcpy((char *)addr, "POSIX shared memory!");
+    exit(0);
+}
+wait(NULL);
+printf("Received: %s\n", (char *)addr);
+
+munmap(addr, size);
+shm_unlink(name);</code></pre>
+    <pre><code>gcc -lrt -o shm shm.c</code></pre>
+
+    <h2>6.6 Message Queues</h2>
+    <pre><code>#include &lt;sys/msg.h&gt;
+#include &lt;sys/ipc.h&gt;
+
+struct msg_buf { long mtype; char mtext[256]; };
+
+key_t key = IPC_PRIVATE;
+int msqid = msgget(key, IPC_CREAT | 0666);
+
+pid_t pid = fork();
+
+if (pid == 0) {
+    struct msg_buf msg;
+    msgrcv(msqid, &#38;msg, sizeof(msg.mtext), 1, 0);
+    printf("[Child] Received: %s\n", msg.mtext);
+    exit(0);
+}
+
+struct msg_buf msg = {1, "Hello via msg queue!"};
+msgsnd(msqid, &#38;msg, strlen(msg.mtext) + 1, 0);
+
+wait(NULL);
+msgctl(msqid, IPC_RMID, NULL);</code></pre>
+
+    <h2>6.7 Semaphores</h2>
+    <pre><code>#include &lt;sys/sem.h&gt;
+#include &lt;sys/ipc.h&gt;
+
+void sem_op(int semid, int op) {
+    struct sembuf sb = {0, op, 0};
+    semop(semid, &#38;sb, 1);
+}
+
+key_t key = IPC_PRIVATE;
+int semid = semget(key, 1, IPC_CREAT | 0666);
+
+union semun { int val; struct semid_ds *buf; unsigned short *array; } su;
+su.val = 1;
+semctl(semid, 0, SETVAL, su);
+
+pid_t pid = fork();
+for (int i = 0; i &lt; 5; i++) {
+    sem_op(semid, -1);  // P operation (wait)
+    printf("Process %d entering critical section\n", getpid());
+    sleep(1);
+    printf("Process %d leaving critical section\n", getpid());
+    sem_op(semid, 1);   // V operation (release)
+}
+
+wait(NULL);
+semctl(semid, 0, IPC_RMID);</code></pre>
+
+    <h2>Summary</h2>
+    <ul>
+      <li>Pipes are suitable for simple parent-child communication</li>
+      <li>FIFO works across unrelated processes</li>
+      <li>Shared memory is the fastest IPC method</li>
+      <li>Message queues provide structured communication</li>
+      <li>Semaphores are used for synchronization and mutual exclusion</li>
+    </ul>
+  </section>
+
+  <!-- CH7 -->
+  <section class="chapter" id="ch7">
+    <h1>Chapter 7: Network Programming</h1>
+
+    <h2>7.1 Introduction to Sockets</h2>
+    <p>A <strong>socket</strong> is an endpoint for network communication, enabling cross-machine IPC. Linux uses the Berkeley Socket API.</p>
+    <table>
+      <tr><th>Type</th><th>Description</th></tr>
+      <tr><td><code>SOCK_STREAM</code></td><td>TCP — reliable, ordered, bidirectional</td></tr>
+      <tr><td><code>SOCK_DGRAM</code></td><td>UDP — unreliable, connectionless</td></tr>
+      <tr><td><code>SOCK_RAW</code></td><td>Raw packets</td></tr>
+    </table>
+
+    <h2>7.2 TCP Server</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+
+int main() {
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd &lt; 0) { perror("socket failed"); return 1; }
+    
+    int opt = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &amp;opt, sizeof(opt));
+    
+    struct sockaddr_in addr = {
+        .sin_family = AF_INET,
+        .sin_port = htons(8080),
+        .sin_addr.s_addr = INADDR_ANY
+    };
+    
+    if (bind(server_fd, (struct sockaddr *)&amp;addr, sizeof(addr)) &lt; 0) {
+        perror("bind failed"); return 1;
+    }
+    
+    if (listen(server_fd, 5) &lt; 0) { perror("listen failed"); return 1; }
+    
+    printf("Server listening on port 8080...\n");
+    
+    struct sockaddr_in client_addr;
+    socklen_t client_len = sizeof(client_addr);
+    
+    int client_fd = accept(server_fd, (struct sockaddr *)&amp;client_addr, &amp;client_len);
+    if (client_fd &lt; 0) { perror("accept failed"); return 1; }
+    
+    char buf[1024] = {0};
+    read(client_fd, buf, sizeof(buf));
+    printf("Received: %s\n", buf);
+    
+    const char *resp = "Hello from server!";
+    write(client_fd, resp, strlen(resp));
+    
+    close(client_fd);
+    close(server_fd);
+    return 0;
+}</code></pre>
+
+    <h2>7.3 TCP Client</h2>
+    <pre><code>#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+int main() {
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock &lt; 0) { perror("socket failed"); return 1; }
+    
+    struct sockaddr_in addr = {
+        .sin_family = AF_INET,
+        .sin_port = htons(8080)
+    };
+    inet_pton(AF_INET, "127.0.0.1", &amp;addr.sin_addr);
+    
+    if (connect(sock, (struct sockaddr *)&amp;addr, sizeof(addr)) &lt; 0) {
+        perror("connect failed"); return 1;
+    }
+    
+    const char *msg = "Hello from client!";
+    write(sock, msg, strlen(msg));
+    
+    char buf[1024] = {0};
+    read(sock, buf, sizeof(buf));
+    printf("Server response: %s\n", buf);
+    
+    close(sock);
+    return 0;
+}</code></pre>
+
+    <h2>7.4 Concurrent Server (Multi-process)</h2>
+    <pre><code>#include &lt;signal.h&gt;
+
+void handle_client(int client_fd) {
+    char buf[1024];
+    int n = read(client_fd, buf, sizeof(buf) - 1);
+    buf[n] = '\0';
+    printf("Process %d handling: %s\n", getpid(), buf);
+    
+    const char *resp = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
+    write(client_fd, resp, strlen(resp));
+    close(client_fd);
+    exit(0);
+}
+
+int main() {
+    signal(SIGCHLD, SIG_IGN);
+    
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int opt = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &amp;opt, sizeof(opt));
+    
+    struct sockaddr_in addr = {
+        .sin_family = AF_INET,
+        .sin_port = htons(8080),
+        .sin_addr.s_addr = INADDR_ANY
+    };
+    
+    bind(server_fd, (struct sockaddr *)&amp;addr, sizeof(addr));
+    listen(server_fd, 10);
+    
+    printf("Concurrent server started (PID: %d)\n", getpid());
+    
+    while (1) {
+        struct sockaddr_in client;
+        socklen_t len = sizeof(client);
+        int client_fd = accept(server_fd, (struct sockaddr *)&amp;client, &amp;len);
+        
+        if (fork() == 0) {
+            close(server_fd);
+            handle_client(client_fd);
+        }
+        close(client_fd);
+    }
+    
+    close(server_fd);
+    return 0;
+}</code></pre>
+
+    <h2>7.5 UDP Server / Client</h2>
+    <h3>UDP Server</h3>
+    <pre><code>int sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+struct sockaddr_in addr = {
+    .sin_family = AF_INET,
+    .sin_port = htons(9090),
+    .sin_addr.s_addr = INADDR_ANY
+};
+bind(sock, (struct sockaddr *)&amp;addr, sizeof(addr));
+
+printf("UDP Server on port 9090...\n");
+
+char buf[1024];
+struct sockaddr_in client;
+socklen_t len = sizeof(client);
+
+int n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&amp;client, &amp;len);
+buf[n] = '\0';
+printf("Received: %s\n", buf);
+
+sendto(sock, "OK", 2, 0, (struct sockaddr *)&amp;client, len);
+close(sock);</code></pre>
+    <h3>UDP Client</h3>
+    <pre><code>int sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+struct sockaddr_in addr = {
+    .sin_family = AF_INET,
+    .sin_port = htons(9090)
+};
+inet_pton(AF_INET, "127.0.0.1", &amp;addr.sin_addr);
+
+sendto(sock, "Hello UDP", 9, 0, (struct sockaddr *)&amp;addr, sizeof(addr));
+
+char buf[1024];
+socklen_t len = sizeof(addr);
+int n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&amp;addr, &amp;len);
+buf[n] = '\0';
+printf("Server response: %s\n", buf);
+close(sock);</code></pre>
+
+    <h2>7.6 select() — Multiplexed I/O</h2>
+    <pre><code>#include &lt;sys/select.h&gt;
+
+int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+// ... bind, listen ...
+
+fd_set read_fds;
+int max_fd = server_fd;
+
+while (1) {
+    FD_ZERO(&amp;read_fds);
+    FD_SET(server_fd, &amp;read_fds);
+    
+    struct timeval tv = {5, 0};
+    int ret = select(max_fd + 1, &amp;read_fds, NULL, NULL, &amp;tv);
+    
+    if (ret &lt; 0) { perror("select error"); break; }
+    else if (ret == 0) { printf("Waiting for connection...\n"); continue; }
+    
+    if (FD_ISSET(server_fd, &amp;read_fds)) {
+        struct sockaddr_in client;
+        socklen_t len = sizeof(client);
+        int client_fd = accept(server_fd, (struct sockaddr *)&amp;client, &amp;len);
+        
+        char buf[1024];
+        int n = read(client_fd, buf, sizeof(buf) - 1);
+        buf[n] = '\0';
+        printf("Received: %s", buf);
+        write(client_fd, "OK\n", 3);
+        close(client_fd);
+    }
+}</code></pre>
+
+    <h2>7.7 HTTP Request Parsing Example</h2>
+    <pre><code>void handle_http(int client_fd) {
+    char buf[4096];
+    int n = read(client_fd, buf, sizeof(buf) - 1);
+    buf[n] = '\0';
+    
+    char method[16], path[256];
+    sscanf(buf, "%s %s", method, path);
+    printf("Method: %s, Path: %s\n", method, path);
+    
+    char *body = "&lt;html&gt;&lt;body&gt;&lt;h1&gt;Hello!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;";
+    char resp[1024];
+    snprintf(resp, sizeof(resp),
+             "HTTP/1.1 200 OK\r\n"
+             "Content-Type: text/html\r\n"
+             "Content-Length: %zu\r\n"
+             "\r\n"
+             "%s",
+             strlen(body), body);
+    
+    write(client_fd, resp, strlen(resp));
+    close(client_fd);
+}</code></pre>
+
+    <h2>Summary</h2>
+    <ul>
+      <li>TCP provides reliable connections for most network applications</li>
+      <li>UDP is lightweight and connectionless, suitable for real-time communication</li>
+      <li><code>select()</code> enables single-threaded multiplexed I/O</li>
+      <li>Concurrent servers can be implemented via <code>fork</code></li>
+    </ul>
+  </section>
+
+  <!-- CH8 -->
+  <section class="chapter" id="ch8">
+    <h1>Chapter 8: Assembly Language, Linking & Loading</h1>
+
+    <h2>8.1 Why Learn Assembly</h2>
+    <ul>
+      <li><strong>Debugging</strong>: reading compiler-generated assembly aids debugging</li>
+      <li><strong>Performance optimization</strong>: identify critical paths the compiler missed</li>
+      <li><strong>Low-level control</strong>: some OS operations (context switching) require assembly</li>
+      <li><strong>Security analysis</strong>: understanding buffer overflow vulnerabilities</li>
+    </ul>
+
+    <h2>8.2 x86-64 Basics (AT&T Syntax)</h2>
+    <pre><code># Data movement
+mov %rax, %rbx       # rax → rbx
+mov $42, %rax        # immediate 42 → rax
+mov (%rbx), %rax     # memory at rbx → rax
+
+# Arithmetic
+add %rcx, %rax       # rax = rax + rcx
+sub $1, %rax         # rax = rax - 1
+imul %rbx, %rax      # rax = rax * rbx
+
+# Comparison and jumps
+cmp $0, %rax         # compare rax with 0
+je label             # jump if equal
+jne label            # jump if not equal
+jg label             # jump if greater
+jl label             # jump if less
+
+# Stack operations
+push %rbp            # push rbp onto stack
+pop %rbp             # pop from stack to rbp
+call function        # call function
+ret                  # return from function</code></pre>
+
+    <h2>8.3 Inline Assembly in C</h2>
+    <pre><code>#include &lt;stdio.h&gt;
+
+int main() {
+    int a = 10, b = 20, result;
+    
+    asm volatile (
+        "mov %1, %%eax\n"
+        "add %2, %%eax\n"
+        "mov %%eax, %0\n"
+        : "=r" (result)      // output operand
+        : "r" (a), "r" (b)   // input operands
+        : "%eax"             // clobbered register
+    );
+    
+    printf("%d + %d = %d\n", a, b, result);
+    return 0;
+}</code></pre>
+
+    <h2>8.4 Calling Convention</h2>
+    <p>x86-64 Linux uses the System V AMD64 ABI:</p>
+    <table>
+      <tr><th>Parameter</th><th>Register</th></tr>
+      <tr><td>1st</td><td>RDI</td></tr>
+      <tr><td>2nd</td><td>RSI</td></tr>
+      <tr><td>3rd</td><td>RDX</td></tr>
+      <tr><td>4th</td><td>RCX</td></tr>
+      <tr><td>5th</td><td>R8</td></tr>
+      <tr><td>6th</td><td>R9</td></tr>
+      <tr><td>7+</td><td>Stack</td></tr>
+    </table>
+    <pre><code>// C function
+long add_four(long a, long b, long c, long d) {
+    return a + b + c + d;
+}
+
+// Assembly equivalent
+add_four:
+    add %rsi, %rdi    // a += b
+    add %rdx, %rdi    // a += c
+    add %rcx, %rdi    // a += d
+    mov %rdi, %rax    // return value in rax
+    ret</code></pre>
+
+    <h2>8.5 Compilation Process</h2>
+    <pre><code>Source (.c) → [Preprocessor] → Expanded source (.i)
+            → [Compiler]     → Assembly (.s)
+            → [Assembler]    → Object file (.o)
+            → [Linker]       → Executable</code></pre>
+    <pre><code>gcc -E program.c -o program.i     # Preprocess
+gcc -S program.i -o program.s     # Compile to assembly
+gcc -c program.s -o program.o     # Assemble to object file
+gcc program.o -o program          # Link to executable
+
+# Or all at once
+gcc program.c -o program</code></pre>
+
+    <h2>8.6 ELF Format</h2>
+    <p>Linux uses the <strong>ELF</strong> (Executable and Linkable Format):</p>
+    <pre><code>file program
+readelf -h program     # ELF header
+readelf -S program     # Section table
+readelf -s program     # Symbol table
+objdump -d program     # Disassembly</code></pre>
+    <pre><code>ELF Header
+├── Program Header Table (for execution)
+└── Section Header Table (for linking)
+    ├── .text    — Code
+    ├── .data    — Initialized data
+    ├── .bss     — Uninitialized data
+    ├── .rodata  — Read-only data
+    ├── .symtab  — Symbol table
+    └── .strtab  — String table</code></pre>
+
+    <h2>8.7 Static vs Dynamic Linking</h2>
+    <h3>Static Linking</h3>
+    <pre><code>gcc -static -o program_static program.c
+ls -la program_static  # larger file</code></pre>
+    <h3>Dynamic Linking</h3>
+    <pre><code>gcc -o program_dynamic program.c
+ls -la program_dynamic # smaller file
+ldd program_dynamic    # check shared library dependencies</code></pre>
+
+    <h3>Dynamic Library Loading</h3>
+    <pre><code>#include &lt;dlfcn.h&gt;
+
+void *handle = dlopen("libm.so.6", RTLD_LAZY);
+if (!handle) {
+    fprintf(stderr, "dlopen failed: %s\n", dlerror());
+    return 1;
+}
+
+double (*sqrt_func)(double) = dlsym(handle, "sqrt");
+if (!sqrt_func) {
+    fprintf(stderr, "dlsym failed: %s\n", dlerror());
+    return 1;
+}
+
+printf("sqrt(16) = %f\n", sqrt_func(16.0));
+dlclose(handle);</code></pre>
+    <pre><code>gcc -ldl -o dl_demo dl_demo.c</code></pre>
+
+    <h2>8.8 Loader Simulation</h2>
+    <pre><code>printf("=== Loader Simulation ===\n");
+printf("1. Read ELF header\n");
+printf("2. Create virtual address space\n");
+printf("3. Load .text / .data / .rodata sections\n");
+printf("4. Resolve dynamic linking symbols\n");
+printf("5. Initialize BSS (zero out)\n");
+printf("6. Set up stack with argc/argv\n");
+printf("7. Jump to entry point (_start)\n");</code></pre>
+
+    <h2>8.9 Analyzing Object Files</h2>
+    <pre><code>// math.c
+int global_var = 42;
+static int static_var = 0;
+
+int add(int a, int b) { return a + b; }
+int multiply(int a, int b) { return a * b; }</code></pre>
+    <pre><code>gcc -c math.c -o math.o
+nm math.o
+# Output:
+# 0000000000000000 T add
+# 0000000000000000 D global_var
+# 000000000000002e T multiply
+# 0000000000000004 b static_var
+
+objdump -d math.o</code></pre>
+
+    <h2>Summary</h2>
+    <ul>
+      <li>Assembly language provides low-level control and optimization capabilities</li>
+      <li>ELF is the standard object file format on Linux</li>
+      <li>Static linking produces larger executables but has no runtime dependencies</li>
+      <li>Dynamic linking saves space but requires dependency management</li>
+      <li>The loader is responsible for loading programs into memory</li>
+    </ul>
+  </section>
+</main>
+
+<button class="to-top" id="toTop" title="Back to top">↑</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const navLinks = document.querySelectorAll('nav a[data-target]');
+  const chapters = document.querySelectorAll('.chapter');
+  const toTop = document.getElementById('toTop');
+
+  function showChapter(id) {
+    chapters.forEach(c => c.classList.remove('active'));
+    navLinks.forEach(l => l.classList.remove('active'));
+
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+
+    const navLink = document.querySelector(`nav a[data-target="${id}"]`);
+    if (navLink) navLink.classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = this.getAttribute('data-target');
+      if (target) {
+        window.location.hash = target;
+        showChapter(target);
+      }
+    });
+  });
+
+  // Build home page grid
+  const homeGrid = document.getElementById('homeGrid');
+  if (homeGrid) {
+    const chapters = [
+      { num: '01', title: 'Introduction', desc: 'System programming fundamentals, system calls, development environment setup' },
+      { num: '02', title: 'Process Management', desc: 'Process lifecycle, fork/exec, wait, signals and zombie processes' },
+      { num: '03', title: 'Memory Management', desc: 'Virtual memory, malloc/free, mmap, memory alignment and Valgrind' },
+      { num: '04', title: 'Threads & Concurrency', desc: 'pthread, race conditions, mutex, deadlock, condition variables' },
+      { num: '05', title: 'File I/O', desc: 'File descriptors, open/close, read/write, dup2, pipes and shell pipelines' },
+      { num: '06', title: 'IPC', desc: 'Pipes, FIFO, shared memory (SysV & POSIX), message queues, semaphores' },
+      { num: '07', title: 'Network Programming', desc: 'TCP/UDP sockets, concurrent servers, select, HTTP parsing' },
+      { num: '08', title: 'Assembly, Linker & Loader', desc: 'x86-64 assembly, ELF format, static/dynamic linking, loader flow' }
+    ];
+
+    chapters.forEach(ch => {
+      const card = document.createElement('div');
+      card.className = 'home-card';
+      card.innerHTML = `<div class="num">Chapter ${ch.num}</div><h3>${ch.title}</h3><p>${ch.desc}</p>`;
+      card.addEventListener('click', () => {
+        const id = `ch${ch.num.charAt(0)}`;
+        window.location.hash = id;
+        showChapter(id);
+      });
+      homeGrid.appendChild(card);
+    });
+  }
+
+  // Handle hash on load
+  const hash = window.location.hash.substring(1);
+  if (hash && document.getElementById(hash)) {
+    showChapter(hash);
+  } else if (!hash) {
+    showChapter('home');
+  }
+
+  // Handle hash changes
+  window.addEventListener('hashchange', function() {
+    const h = window.location.hash.substring(1);
+    if (h && document.getElementById(h)) showChapter(h);
+  });
+
+  // Scroll-to-top button
+  window.addEventListener('scroll', function() {
+    toTop.classList.toggle('visible', window.scrollY > 300);
+  });
+
+  toTop.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>
